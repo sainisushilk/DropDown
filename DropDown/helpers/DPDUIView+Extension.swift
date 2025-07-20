@@ -38,24 +38,21 @@ internal extension UIView {
 }
 
 internal extension UIWindow {
-	
-	static func visibleWindow() -> UIWindow? {
-		var currentWindow = UIApplication.shared.keyWindow
-		
-		if currentWindow == nil {
-			let frontToBackWindows = Array(UIApplication.shared.windows.reversed()) 
-			
-			for window in frontToBackWindows {
-				if window.windowLevel == UIWindow.Level.normal {
-					currentWindow = window
-					break
-				}
-			}
-		}
-		
-		return currentWindow
-	}
-	
+    
+    static func visibleWindow() -> UIWindow? {
+        // iOS 13+
+        if #available(iOS 13.0, *) {
+            return UIApplication.shared
+                .connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap { $0.windows }
+                .first { $0.isKeyWindow }
+        } else {
+            // iOS 12 and earlier
+            return UIApplication.shared.keyWindow
+        }
+    }
 }
+
 
 #endif
